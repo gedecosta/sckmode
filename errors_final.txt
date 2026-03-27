@@ -1,0 +1,64 @@
+﻿app/(tabs)/_layout.tsx(22,50): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/_layout.tsx(29,49): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/_layout.tsx(36,56): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/_layout.tsx(43,49): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/_layout.tsx(50,50): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/create.tsx(38,34): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/create.tsx(42,27): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/index.tsx(42,27): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/index.tsx(50,31): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/index.tsx(60,28): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/challenges/index.tsx(91,36): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/[username].tsx(21,34): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/[username].tsx(25,37): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/[username].tsx(40,33): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/index.tsx(30,31): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/index.tsx(41,32): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/index.tsx(53,33): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/profile/index.tsx(57,35): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+app/(tabs)/track/index.tsx(54,33): error TS2322: Type '{ size: number; color: string; fill: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/challenges/ChallengeBox.tsx(36,33): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/challenges/ChallengeBox.tsx(40,29): error TS2322: Type '{ size: number; color: string; className: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/challenges/ChallengeBox.tsx(66,29): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/feed/PostCard.tsx(56,30): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/feed/PostCard.tsx(60,38): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/feed/PostCard.tsx(67,33): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/feed/PostCard.tsx(70,31): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/ui/Input.tsx(57,35): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/ui/Input.tsx(59,32): error TS2322: Type '{ size: number; color: string; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/ui/Toast.tsx(44,27): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/ui/Toast.tsx(45,26): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+components/ui/Toast.tsx(46,17): error TS2322: Type '{ color: string; size: number; }' is not assignable to type 'IntrinsicAttributes & LucideProps'.
+  Property 'color' does not exist on type 'IntrinsicAttributes & LucideProps'.
+hooks/useTracking.ts(9,28): error TS2694: Namespace 'global.NodeJS' has no exported member 'Timeout'.
+hooks/useTracking.ts(42,36): error TS2339: Property 'remove' does not exist on type 'never'.
