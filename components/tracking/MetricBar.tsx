@@ -13,32 +13,32 @@ export function MetricBar() {
   const hrColor = getZoneColor(zone);
 
   return (
-    <View className="flex-row items-center justify-between bg-athledia-card border border-athledia-slate/20 rounded-3xl p-5 shadow-xl mx-6 absolute top-16 left-0 right-0 z-10">
+    <View className="flex-row items-center justify-between bg-athledia-dark rounded-[24px] p-5 shadow-xl mx-6 absolute top-[120px] left-0 right-0 z-10 border border-white/10">
       
-      <View className="flex-1 items-center border-r border-athledia-slate/20">
-        <Text className="text-athledia-slate text-xs font-bold uppercase tracking-widest mb-1">Ritmo</Text>
-        <Text className="text-athledia-dark text-3xl font-black font-serif">{paceStr.split('/')[0]}</Text>
-        <Text className="text-athledia-slate text-xs font-medium">/km</Text>
+      <View className="flex-1 items-center border-r border-white/10">
+        <Text className="text-athledia-slate text-[9px] font-black uppercase tracking-widest mb-1 opacity-70">Pace</Text>
+        <Text className="text-white text-xl font-black font-serif">{paceStr.split('/')[0]}</Text>
+        <Text className="text-athledia-slate text-[8px] font-black uppercase opacity-60">/km</Text>
       </View>
 
-      <View className="flex-[1.2] items-center border-r border-athledia-slate/20">
-        <Text className="text-athledia-slate text-xs font-bold uppercase tracking-widest mb-1">Distância</Text>
-        <Text className="text-athledia-dark text-4xl font-black font-serif">{distanceKm.toFixed(2)}</Text>
-        <Text className="text-athledia-slate text-xs font-medium">km</Text>
+      <View className="flex-[1.2] items-center border-r border-white/10">
+        <Text className="text-athledia-slate text-[9px] font-black uppercase tracking-widest mb-1 opacity-70">Dist</Text>
+        <Text className="text-white text-3xl font-black font-serif tracking-tighter">{distanceKm.toFixed(2)}</Text>
+        <Text className="text-athledia-slate text-[8px] font-black uppercase opacity-60">km</Text>
       </View>
 
-      <View className="flex-1 items-center pb-2 pt-1 border-r border-athledia-slate/20">
-        <Text className="text-athledia-slate text-xs font-bold uppercase tracking-widest mb-1">Tempo</Text>
-        <Text className="text-athledia-dark text-xl font-bold font-mono tracking-tighter tabular-nums">{timeStr}</Text>
+      <View className="flex-1 items-center border-r border-white/10">
+        <Text className="text-athledia-slate text-[9px] font-black uppercase tracking-widest mb-1 opacity-70">Time</Text>
+        <Text className="text-white text-lg font-black font-mono tracking-tighter tabular-nums leading-6">{timeStr}</Text>
       </View>
 
-      <View className="flex-1 items-center pb-2 pt-1">
-        <Text className="text-athledia-slate text-xs font-bold uppercase tracking-widest mb-1">BPM</Text>
+      <View className="flex-1 items-center">
+        <Text className="text-athledia-slate text-[9px] font-black uppercase tracking-widest mb-1 opacity-70">BPM</Text>
         <View className="flex-row items-baseline gap-1">
-          <Text className="text-athledia-dark text-xl font-bold font-mono tabular-nums">{heartRate}</Text>
-          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: hrColor }} />
+          <Text className="text-white text-lg font-black font-mono tabular-nums leading-6">{heartRate}</Text>
+          <View className="w-1.5 h-1.5 rounded-full mb-1" style={{ backgroundColor: hrColor }} />
         </View>
-        <Text className="text-athledia-slate text-[10px] font-bold mt-1 uppercase" style={{ color: hrColor }}>Zone {zone.replace('Z', '')}</Text>
+        <Text className="text-[7px] font-black mt-1 uppercase" style={{ color: hrColor }}>Z{zone.replace('Z', '')}</Text>
       </View>
       
     </View>

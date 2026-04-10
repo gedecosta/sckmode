@@ -1,6 +1,7 @@
+import 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts, RobotoSlab_400Regular, RobotoSlab_700Bold, RobotoSlab_900Black } from '@expo-google-fonts/roboto-slab';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
@@ -25,15 +26,26 @@ export default function RootLayout() {
     'RobotoSlab-Black': RobotoSlab_900Black,
   });
 
-  const { initialized, session } = useAuthStore();
+  const { initialized, session, setSession } = useAuthStore();
 
   useEffect(() => {
-    if (loaded) {
+    // Failsafe: Se o Supabase não responder em 3 segundos,
+    // forçamos a inicialização para não travar no Splash.
+    const safetyTimeout = setTimeout(() => {
+      if (!initialized) {
+        useAuthStore.getState().setSession(null);
+      }
+    }, 3000);
+
+    if (loaded && initialized) {
+      clearTimeout(safetyTimeout);
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
 
-  if (!loaded) {
+    return () => clearTimeout(safetyTimeout);
+  }, [loaded, initialized]);
+
+  if (!loaded || !initialized) {
     return null;
   }
 
@@ -41,14 +53,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            {session ? (
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            ) : (
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            )}
-            <Stack.Screen name="+not-found" />
-          </Stack>
+          <Stack screenOptions={{ headerShown: false }} />
           <StatusBar style="auto" />
         </GestureHandlerRootView>
       </ThemeProvider>

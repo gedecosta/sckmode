@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { PostCard } from '../../../components/feed/PostCard';
 import { useFeed } from '../../../hooks/useFeed';
-import { Layout } from 'lucide-react-native';
+import { Zap } from 'lucide-react-native';
 
 export default function FeedScreen() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = useFeed();
@@ -12,9 +12,9 @@ export default function FeedScreen() {
   return (
     <View className="flex-1 bg-athledia-bg">
       {/* Header */}
-      <View className="flex-row items-center px-6 pt-12 pb-4 bg-athledia-bg border-b border-athledia-slate/10">
-        <Layout size={28} color="#1F2328" />
-        <Text className="text-athledia-dark text-4xl font-black font-serif uppercase tracking-tighter ml-3">Feed</Text>
+      <View className="flex-row items-center px-6 pt-[52px] pb-4 bg-athledia-bg">
+        <Zap size={32} color="#1F2328" strokeWidth={2.5} />
+        <Text className="text-athledia-dark text-4xl font-black font-serif uppercase tracking-tighter ml-2">Feed</Text>
       </View>
 
       <FlatList

@@ -7,10 +7,10 @@ export function useTracking() {
 
   useEffect(() => {
     let timerInter: ReturnType<typeof setInterval> | null = null;
-    let locationSub: any = null;
+    let locationSub: Location.LocationSubscription | null = null;
 
     const startLocationTracking = async () => {
-      let { status: permissionStatus } = await Location.requestForegroundPermissionsAsync();
+      const { status: permissionStatus } = await Location.requestForegroundPermissionsAsync();
       
       if (permissionStatus !== 'granted') {
         return;
@@ -37,9 +37,6 @@ export function useTracking() {
     if (status === 'running') {
       timerInter = setInterval(tickTimer, 1000);
       startLocationTracking();
-    } else if (status === 'paused' || status === 'finished') {
-      if (timerInter) clearInterval(timerInter);
-      if (locationSub) locationSub.remove();
     }
 
     return () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 export interface Badge {
   id: string;
@@ -15,31 +15,95 @@ interface BadgeGridProps {
 
 export function BadgeGrid({ badges }: BadgeGridProps) {
   return (
-    <View className="mb-8">
-      <View className="flex-row items-center justify-between mb-4">
-        <Text className="text-white font-bold text-xl">Conquistas</Text>
-        <Text className="text-indigo-400 font-medium">Ver 24</Text>
+    <View style={{ marginBottom: 24 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 14,
+        }}
+      >
+        <Text
+          style={{
+            color: '#1F2328',
+            fontSize: 16,
+            fontWeight: '900',
+            textTransform: 'uppercase',
+            letterSpacing: 0.3,
+          }}
+        >
+          Conquistas
+        </Text>
+        <TouchableOpacity>
+          <Text
+            style={{
+              color: '#495057',
+              fontSize: 13,
+              fontWeight: '700',
+              textDecorationLine: 'underline',
+            }}
+          >
+            Ver todas
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      <View className="flex-row flex-wrap gap-4">
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 10,
+        }}
+      >
         {badges.map((badge) => {
           const isUnlocked = !!badge.unlockedAt;
           return (
-            <View 
-              key={badge.id} 
-              className={`w-[30%] aspect-square rounded-2xl p-2 items-center justify-center border ${
-                isUnlocked 
-                  ? 'bg-zinc-900 border-zinc-800' 
-                  : 'bg-zinc-950 border-zinc-900 opacity-50'
-              }`}
+            <View
+              key={badge.id}
+              style={{
+                width: '30%',
+                aspectRatio: 1,
+                borderRadius: 18,
+                padding: 8,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: isUnlocked ? '#1F2328' : '#F4F4F4',
+                borderWidth: 1,
+                borderColor: isUnlocked
+                  ? '#1F2328'
+                  : 'rgba(73, 80, 87, 0.12)',
+                opacity: isUnlocked ? 1 : 0.5,
+              }}
             >
-              <Text className="text-4xl mb-2">{badge.icon}</Text>
-              <Text 
-                className="text-white text-[10px] font-bold text-center leading-[12px]"
+              <Text style={{ fontSize: 30, marginBottom: 6 }}>{badge.icon}</Text>
+              <Text
+                style={{
+                  color: isUnlocked ? '#FFFFFF' : '#495057',
+                  fontSize: 9,
+                  fontWeight: '800',
+                  textAlign: 'center',
+                  lineHeight: 12,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.3,
+                }}
                 numberOfLines={2}
               >
                 {badge.name}
               </Text>
+              {isUnlocked && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: '#48BB78',
+                  }}
+                />
+              )}
             </View>
           );
         })}

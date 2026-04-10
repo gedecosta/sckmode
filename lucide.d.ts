@@ -1,10 +1,13 @@
-import 'lucide-react-native';
+import { SvgProps } from 'react-native-svg';
 
 declare module 'lucide-react-native' {
-  export interface LucideProps {
+  export interface LucideProps extends SvgProps {
+    size?: number | string;
+    absoluteStrokeWidth?: boolean;
     color?: string;
-    size?: number;
+    strokeWidth?: number | string;
     fill?: string;
-    className?: string;
   }
+
+  export type LucideIcon = React.FC<LucideProps>;
 }

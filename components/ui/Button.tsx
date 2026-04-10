@@ -30,21 +30,21 @@ export const Button = forwardRef<View, ButtonProps>(
     const baseStyles = 'flex flex-row items-center justify-center rounded-xl active:opacity-80';
     
     const variantStyles = {
-      primary: 'bg-athledia-dark',
-      secondary: 'bg-athledia-slate',
+      primary: 'bg-athledia-dark shadow-sm',
+      secondary: 'bg-athledia-bg border-2 border-athledia-slate/10 shadow-sm',
       ghost: 'bg-transparent',
       danger: 'bg-red-500',
     };
 
     const sizeStyles = {
       sm: 'py-2 px-4',
-      md: 'py-3 px-6 cursor-pointer',
-      lg: 'py-4 px-8',
+      md: 'py-4 px-6',
+      lg: 'py-5 px-8',
     };
 
     const textStyles = {
-      primary: 'text-athledia-accent font-bold tracking-wide uppercase',
-      secondary: 'text-athledia-bg font-bold',
+      primary: 'text-athledia-accent font-black tracking-widest uppercase',
+      secondary: 'text-athledia-dark font-black tracking-widest uppercase',
       ghost: 'text-athledia-dark font-bold underline',
       danger: 'text-white font-semibold',
     };

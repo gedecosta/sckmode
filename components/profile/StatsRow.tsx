@@ -8,36 +8,62 @@ interface StatsRowProps {
   prs: number;
 }
 
+function formatStat(value: number): string {
+  if (value >= 10000) return `${(value / 1000).toFixed(0)}K`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+  return value.toString();
+}
+
+function StatItem({ value, label, accent }: { value: number; label: string; accent?: boolean }) {
+  return (
+    <View style={{ alignItems: 'center', flex: 1 }}>
+      <Text
+        style={{
+          color: accent ? '#1F2328' : '#1F2328',
+          fontSize: 20,
+          fontWeight: '900',
+          fontVariant: ['tabular-nums'],
+        }}
+      >
+        {formatStat(value)}
+      </Text>
+      <Text
+        style={{
+          color: '#868E96',
+          fontSize: 10,
+          fontWeight: '700',
+          marginTop: 3,
+          textTransform: 'uppercase',
+          letterSpacing: 0.8,
+        }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+}
+
 export function StatsRow({ followers, following, activities, prs }: StatsRowProps) {
   return (
-    <View className="flex-row items-center justify-between bg-zinc-900 border border-zinc-800 rounded-2xl p-4 my-6">
-      
-      <View className="items-center flex-1">
-        <Text className="text-white text-xl font-black tabular-nums">{followers}</Text>
-        <Text className="text-zinc-500 text-xs font-semibold mt-1">Seguidores</Text>
-      </View>
-      
-      <View className="w-[1px] h-8 bg-zinc-800" />
-      
-      <View className="items-center flex-1">
-        <Text className="text-white text-xl font-black tabular-nums">{following}</Text>
-        <Text className="text-zinc-500 text-xs font-semibold mt-1">Seguindo</Text>
-      </View>
-      
-      <View className="w-[1px] h-8 bg-zinc-800" />
-      
-      <View className="items-center flex-1">
-        <Text className="text-white text-xl font-black tabular-nums">{activities}</Text>
-        <Text className="text-zinc-500 text-xs font-semibold mt-1">Atividades</Text>
-      </View>
-
-      <View className="w-[1px] h-8 bg-zinc-800" />
-      
-      <View className="items-center flex-1">
-        <Text className="text-indigo-400 text-xl font-black tabular-nums">{prs}</Text>
-        <Text className="text-zinc-500 text-xs font-semibold mt-1 uppercase tracking-wider">PRs</Text>
-      </View>
-
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F4F4F4',
+        borderRadius: 18,
+        padding: 16,
+        marginVertical: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(73, 80, 87, 0.1)',
+      }}
+    >
+      <StatItem value={followers} label="Seguidores" />
+      <View style={{ width: 1, height: 28, backgroundColor: 'rgba(73, 80, 87, 0.12)' }} />
+      <StatItem value={following} label="Seguindo" />
+      <View style={{ width: 1, height: 28, backgroundColor: 'rgba(73, 80, 87, 0.12)' }} />
+      <StatItem value={activities} label="Atividades" />
+      <View style={{ width: 1, height: 28, backgroundColor: 'rgba(73, 80, 87, 0.12)' }} />
+      <StatItem value={prs} label="PRs" accent />
     </View>
   );
 }

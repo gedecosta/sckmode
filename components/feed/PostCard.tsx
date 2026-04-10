@@ -62,7 +62,7 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <View className="bg-athledia-bg p-4 mb-4">
+    <View className="bg-athledia-card p-5 mb-4 border-y border-athledia-slate/10 shadow-sm">
       
       {/* Header */}
       <View className="flex-row items-center mb-3">
@@ -84,56 +84,56 @@ export function PostCard({ post }: PostCardProps) {
         />
       )}
 
-      {/* Metrics Bar */}
-      <View className="flex-row items-center border border-athledia-slate/20 rounded-xl p-3 mb-4 space-x-4 bg-athledia-card">
-        <View className="flex-1">
-          <Text className="text-athledia-slate text-xs mb-1 font-bold uppercase tracking-wider">Distância</Text>
-          <Text className="text-athledia-dark font-black font-serif text-lg">{post.distance}</Text>
+      {/* Metrics Bar - Brutalist Ribbon */}
+      <View className="flex-row items-center bg-athledia-dark rounded-2xl p-4 mb-4 shadow-md">
+        <View className="flex-1 items-center">
+          <Text className="text-athledia-slate text-[10px] mb-1 font-black uppercase tracking-widest opacity-80">Km</Text>
+          <Text className="text-white font-black font-serif text-2xl tracking-tighter">{post.distance}</Text>
         </View>
-        <View className="w-[1px] h-full bg-athledia-slate/20" />
-        <View className="flex-[1.5]">
-          <Text className="text-athledia-slate text-xs mb-1 font-bold uppercase tracking-wider">Ritmo</Text>
-          <Text className="text-athledia-dark font-black font-serif text-lg">{post.pace}</Text>
+        <View className="w-[1.5px] h-10 bg-[#D4A640]/30 mx-2" />
+        <View className="flex-[1.5] items-center">
+          <Text className="text-athledia-slate text-[10px] mb-1 font-black uppercase tracking-widest opacity-80">Pace</Text>
+          <Text className="text-white font-black font-serif text-2xl tracking-tighter">{post.pace}</Text>
         </View>
-        <View className="w-[1px] h-full bg-athledia-slate/20" />
-        <View className="flex-1">
-          <Text className="text-athledia-slate text-xs mb-1 font-bold uppercase tracking-wider">Tempo</Text>
-          <Text className="text-athledia-dark font-black font-serif text-lg">{post.duration}</Text>
+        <View className="w-[1.5px] h-10 bg-[#D4A640]/30 mx-2" />
+        <View className="flex-1 items-center">
+          <Text className="text-athledia-slate text-[10px] mb-1 font-black uppercase tracking-widest opacity-80">Time</Text>
+          <Text className="text-white font-black font-serif text-2xl tracking-tighter">{post.duration}</Text>
         </View>
       </View>
 
       {/* Actions */}
       <View className="flex-row items-center justify-between mt-1">
-        <View className="flex-row space-x-6">
+        <View className="flex-row items-center space-x-6">
           <Pressable onPress={handleLike} className="flex-row items-center">
             <AnimatedView style={animatedLikeStyle}>
               <Heart 
-                size={24} 
-                color={liked ? "#1F2328" : "#495057"} 
+                size={22} 
+                color={liked ? "#1F2328" : "#868E96"} 
                 fill={liked ? "#1F2328" : "transparent"} 
               />
             </AnimatedView>
-            <Text className="text-athledia-slate ml-2 font-bold">{liked ? post.likes + 1 : post.likes}</Text>
+            <Text className="text-athledia-slate ml-2 font-bold text-sm tracking-tight">{liked ? post.likes + 1 : post.likes}</Text>
           </Pressable>
-          <TouchableOpacity className="flex-row items-center ml-6">
-            <MessageCircle size={24} color="#495057" />
-            <Text className="text-athledia-slate ml-2 font-bold">{post.comments}</Text>
+          <TouchableOpacity className="flex-row items-center ml-2">
+            <MessageCircle size={22} color="#868E96" />
+            <Text className="text-athledia-slate ml-2 font-bold text-sm tracking-tight">{post.comments}</Text>
           </TouchableOpacity>
         </View>
 
-        <View className="flex-row space-x-4">
-          <Pressable onPress={handleBookmark} className="mr-6">
+        <View className="flex-row items-center space-x-4">
+          <Pressable onPress={handleBookmark}>
             <AnimatedView style={animatedBookmarkStyle}>
               <Bookmark 
-                size={24} 
-                color={bookmarked ? "#1F2328" : "#495057"} 
+                size={22} 
+                color={bookmarked ? "#1F2328" : "#868E96"} 
                 fill={bookmarked ? "#1F2328" : "transparent"} 
               />
             </AnimatedView>
           </Pressable>
           <Pressable onPress={handleShare}>
             <AnimatedView style={animatedShareStyle}>
-              <Share2 size={24} color="#495057" />
+              <Share2 size={22} color="#868E96" />
             </AnimatedView>
           </Pressable>
         </View>

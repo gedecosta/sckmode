@@ -19,7 +19,7 @@ export interface Post {
 // Mocked fetch function
 const fetchPosts = async ({ pageParam = 0 }): Promise<{ data: Post[]; nextCursor: number | undefined }> => {
   // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise<void>((resolve) => setTimeout(resolve, 800));
 
   const items: Post[] = [
     {
