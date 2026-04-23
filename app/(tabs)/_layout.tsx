@@ -15,11 +15,13 @@ export default function TabLayout() {
   const router = useRouter();
   const segments = useSegments();
 
+  /** 
   useEffect(() => {
     if (initialized && !session && segments[0] === '(tabs)') {
       router.replace('/(auth)/login');
     }
   }, [session, initialized, segments]);
+  */
 
   return (
     <Tabs

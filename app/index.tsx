@@ -9,11 +9,7 @@ export default function Index() {
   useEffect(() => {
     if (!initialized) return;
 
-    if (session) {
-      router.replace('/(tabs)/feed');
-    } else {
-      router.replace('/(auth)/login');
-    }
+    router.replace('/(tabs)/feed');
   }, [session, initialized]);
 
   return null;
