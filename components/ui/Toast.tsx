@@ -1,12 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, Text } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Info, CheckCircle, AlertOctagon } from 'lucide-react-native';
+import { useThemeColors } from '../../lib/tokens';
 
 interface ToastProps {
   message: string;
@@ -16,45 +12,39 @@ interface ToastProps {
 
 export function Toast({ message, type = 'info', onHide }: ToastProps) {
   const translateY = useSharedValue(-100);
+  const t = useThemeColors();
 
   useEffect(() => {
     translateY.value = withSpring(50, { damping: 15 });
-    
     const timer = setTimeout(() => {
-      translateY.value = withTiming(-100, { duration: 300 }, () => {
-        // use runOnJS ? we can just call onHide after 300ms
-      });
+      translateY.value = withTiming(-100, { duration: 300 });
       setTimeout(onHide, 300);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ translateY: translateY.value }] }));
 
-  const bgColors = {
-    success: 'bg-athledia-dark border border-athledia-slate/20',
-    error: 'bg-red-900 border border-red-500/50',
-    info: 'bg-athledia-card border border-athledia-slate/20',
-  };
-
-  const Icons = {
-    success: <CheckCircle color="#FFFFFF" size={20} />,
-    error: <AlertOctagon color="#FFFFFF" size={20} />,
-    info: <Info color="#1F2328" size={20} />,
-  };
+  const styleMap = {
+    success: { bg: t.ribbonBg, fg: t.ribbonText, border: t.borderStrong, icon: <CheckCircle color={t.success} size={20} /> },
+    error:   { bg: t.ribbonBg, fg: t.ribbonText, border: 'rgba(216,76,76,0.4)', icon: <AlertOctagon color={t.danger} size={20} /> },
+    info:    { bg: t.surface,  fg: t.text,        border: t.border,              icon: <Info color={t.accentText} size={20} /> },
+  }[type];
 
   return (
     <Animated.View
-      style={animatedStyle}
-      className={`absolute top-0 left-6 right-6 z-50 flex-row items-center p-4 rounded-2xl shadow-xl ${bgColors[type]}`}
+      style={[animatedStyle, {
+        position: 'absolute', top: 0, left: 24, right: 24, zIndex: 50,
+        flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16,
+        backgroundColor: styleMap.bg, borderWidth: 1, borderColor: styleMap.border,
+        shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 24, elevation: 8,
+      }]}
     >
-      <View className="mr-3">{Icons[type]}</View>
-      <Text className={`${type === 'info' ? 'text-athledia-dark' : 'text-white'} font-bold text-base flex-1 font-serif`}>
-        {message}
-      </Text>
+      <View style={{ marginRight: 12 }}>{styleMap.icon}</View>
+      <Text style={{
+        fontFamily: 'RobotoSlab-Bold', fontSize: 14, flex: 1,
+        color: styleMap.fg, letterSpacing: -0.2,
+      }}>{message}</Text>
     </Animated.View>
   );
 }

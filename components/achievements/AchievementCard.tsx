@@ -1,241 +1,148 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 import { Achievement, UserAchievement, TIER_META } from '../../stores/achievementStore';
-import { MetallicBadge } from './MetallicBadge';
+import { TierBadge } from './TierBadge';
+import { ActivityIcon } from '../ui/ActivityIcon';
+import { Numeric } from '../ui/Numeric';
+import { useThemeColors } from '../../lib/tokens';
 
-interface AchievementCardProps {
+interface Props {
   achievement: Achievement;
   userProgress?: UserAchievement;
 }
 
-export function AchievementCard({ achievement, userProgress }: AchievementCardProps) {
+export function AchievementCard({ achievement, userProgress }: Props) {
+  const t = useThemeColors();
   const isUnlocked = !!userProgress?.unlockedAt;
   const progress = userProgress?.progress ?? 0;
   const tier = TIER_META[achievement.tier];
-
-  // Subtle shimmer animation for unlocked cards
-  const shimmerAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    if (isUnlocked) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(shimmerAnim, {
-            toValue: 1,
-            duration: 3000,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(shimmerAnim, {
-            toValue: 0,
-            duration: 3000,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    }
-  }, [isUnlocked]);
-
-  const shimmerOpacity = shimmerAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.05, 0.18],
-  });
 
   return (
     <View
       style={{
         width: '47%',
-        aspectRatio: 0.72,
-        borderRadius: 20,
+        aspectRatio: 0.75,
+        borderRadius: 18,
+        backgroundColor: t.surface,
+        borderWidth: 1,
+        borderColor: t.border,
+        padding: 16,
+        marginBottom: 14,
         overflow: 'hidden',
-        marginBottom: 16,
-        borderWidth: 1.5,
-        borderColor: isUnlocked ? achievement.accentColor : 'rgba(73, 80, 87, 0.1)',
-        backgroundColor: isUnlocked ? '#F4F4F4' : '#E5E5E5',
-        opacity: isUnlocked ? 1 : 0.6,
+        opacity: isUnlocked ? 1 : 0.85,
       }}
     >
-      {/* Shimmer overlay for unlocked */}
-      {isUnlocked && (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: achievement.accentColor,
-            opacity: shimmerOpacity,
-          }}
+      {/* Top rail — tier label */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{
+          fontFamily: 'Menlo',
+          fontSize: 9,
+          letterSpacing: 1.8,
+          color: isUnlocked ? tier.color : t.textDim,
+          textTransform: 'uppercase',
+          fontWeight: '700',
+        }}>
+          {tier.label}
+        </Text>
+        <Numeric weight="bold" style={{
+          fontSize: 10,
+          color: isUnlocked ? t.textMuted : t.textDim,
+          letterSpacing: 0.5,
+        }}>
+          {achievement.scoreValue} PTS
+        </Numeric>
+      </View>
+
+      {/* Badge centralizado */}
+      <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 6, marginBottom: 8 }}>
+        <TierBadge
+          tier={achievement.tier}
+          category={achievement.category}
+          size={76}
+          unlocked={isUnlocked}
         />
-      )}
+      </View>
 
-      {/* Tier indicator top bar */}
-      <View
+      {/* Título */}
+      <Text
         style={{
-          height: 3,
-          backgroundColor: isUnlocked ? tier.color : 'rgba(113, 128, 150, 0.2)',
+          fontFamily: 'RobotoSlab-Black',
+          fontSize: 13,
+          lineHeight: 15,
+          color: t.text,
+          letterSpacing: -0.3,
+          textAlign: 'center',
+          marginTop: 2,
         }}
-      />
+        numberOfLines={2}
+      >
+        {achievement.title}
+      </Text>
 
-      {/* Content */}
-      <View style={{ flex: 1, padding: 14, justifyContent: 'space-between' }}>
-        {/* Custom 3D Metallic Badge */}
-        <View style={{ alignItems: 'center', marginTop: 4 }}>
-          <MetallicBadge achievement={achievement} size={64} isUnlocked={isUnlocked} />
-        </View>
+      {/* Requirement em mono */}
+      <Text
+        style={{
+          fontFamily: 'Menlo',
+          fontSize: 9,
+          letterSpacing: 1.2,
+          color: t.textMuted,
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          marginTop: 4,
+        }}
+        numberOfLines={1}
+      >
+        {achievement.requirement}
+      </Text>
 
-        {/* Title */}
-        <View style={{ alignItems: 'center', marginTop: 10 }}>
-          <Text
-            style={{
-              color: isUnlocked ? '#1F2328' : '#868E96',
-              fontSize: 13,
-              fontWeight: '900',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-              lineHeight: 17,
-            }}
-            numberOfLines={2}
-          >
-            {achievement.title}
-          </Text>
-        </View>
+      {/* Divisória */}
+      <View style={{ height: 1, backgroundColor: t.border, marginTop: 10, marginBottom: 10 }} />
 
-        {/* Subtitle / requirement */}
-        <View style={{ alignItems: 'center', marginTop: 4 }}>
-          <Text
-            style={{
-              color: isUnlocked ? achievement.accentColor : '#868E96',
-              fontSize: 10,
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: 1.2,
-              textAlign: 'center',
-            }}
-            numberOfLines={2}
-          >
-            {achievement.requirement}
-          </Text>
-        </View>
-
-        {/* Bottom: Progress bar or Unlocked indicator */}
-        <View style={{ marginTop: 'auto', paddingTop: 8 }}>
-          {isUnlocked ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-              <View
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: '#48BB78',
-                  marginRight: 6,
-                }}
-              />
-              <Text
-                style={{
-                  color: '#48BB78',
-                  fontSize: 10,
-                  fontWeight: '800',
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                }}
-              >
-                Conquistado
-              </Text>
+      {/* Status */}
+      <View style={{ marginTop: 'auto' }}>
+        {isUnlocked ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{
+              width: 5, height: 5, borderRadius: 3, backgroundColor: t.success, marginRight: 6,
+            }} />
+            <Text style={{
+              fontFamily: 'System', fontSize: 10, fontWeight: '700',
+              letterSpacing: 1.4, textTransform: 'uppercase', color: t.success,
+            }}>
+              Conquistado
+            </Text>
+          </View>
+        ) : progress > 0 ? (
+          <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 5 }}>
+              <Text style={{
+                fontFamily: 'System', fontSize: 9, fontWeight: '700',
+                letterSpacing: 1.4, color: t.textMuted, textTransform: 'uppercase',
+              }}>Progresso</Text>
+              <Numeric weight="bold" style={{ fontSize: 10, color: t.text }}>
+                {progress}%
+              </Numeric>
             </View>
-          ) : progress > 0 ? (
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginBottom: 4,
-                }}
-              >
-                <Text style={{ color: '#868E96', fontSize: 9, fontWeight: '700' }}>
-                  PROGRESSO
-                </Text>
-                <Text style={{ color: '#495057', fontSize: 9, fontWeight: '800' }}>
-                  {progress}%
-                </Text>
-              </View>
-              <View
-                style={{
-                  height: 4,
-                  backgroundColor: 'rgba(73, 80, 87, 0.1)',
-                  borderRadius: 2,
-                  overflow: 'hidden',
-                }}
-              >
-                <View
-                  style={{
-                    height: '100%',
-                    width: `${progress}%`,
-                    backgroundColor: achievement.accentColor,
-                    borderRadius: 2,
-                  }}
-                />
-              </View>
+            <View style={{ height: 3, backgroundColor: t.surfaceAlt, borderRadius: 2, overflow: 'hidden' }}>
+              <View style={{
+                height: '100%',
+                width: `${progress}%`,
+                backgroundColor: t.accent,
+                borderRadius: 2,
+              }} />
             </View>
-          ) : (
-            <View style={{ alignItems: 'center' }}>
-              <Text style={{ color: '#868E96', fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1 }}>
-                🔒 Bloqueado
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Score badge */}
-        <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
-            backgroundColor: isUnlocked ? `${tier.color}33` : 'rgba(73, 80, 87, 0.05)',
-            paddingHorizontal: 6,
-            paddingVertical: 2,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: isUnlocked ? `${tier.color}55` : 'rgba(73, 80, 87, 0.1)',
-          }}
-        >
-          <Text
-            style={{
-              color: isUnlocked ? tier.color : '#868E96',
-              fontSize: 8,
-              fontWeight: '900',
-              letterSpacing: 0.5,
-            }}
-          >
-            {achievement.scoreValue} PTS
-          </Text>
-        </View>
-
-        {/* Tier label */}
-        <View
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            backgroundColor: isUnlocked ? `${tier.color}22` : 'rgba(73, 80, 87, 0.05)',
-            paddingHorizontal: 5,
-            paddingVertical: 2,
-            borderRadius: 4,
-          }}
-        >
-          <Text
-            style={{
-              color: isUnlocked ? tier.color : '#868E96',
-              fontSize: 7,
-              fontWeight: '900',
-              textTransform: 'uppercase',
-              letterSpacing: 1,
-            }}
-          >
-            {tier.label}
-          </Text>
-        </View>
+          </View>
+        ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <ActivityIcon kind="lock" size={11} color={t.textDim} />
+            <Text style={{
+              fontFamily: 'System', fontSize: 10, fontWeight: '700',
+              letterSpacing: 1.4, textTransform: 'uppercase', color: t.textDim, marginLeft: 6,
+            }}>
+              Bloqueado
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

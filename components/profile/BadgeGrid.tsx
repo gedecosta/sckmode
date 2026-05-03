@@ -1,108 +1,114 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { TierBadge } from '../achievements/TierBadge';
+import type { AchievementTier, AchievementCategory } from '../../stores/achievementStore';
+import { useThemeColors } from '../../lib/tokens';
 
 export interface Badge {
   id: string;
   name: string;
-  icon: string;
-  description: string;
+  tier: AchievementTier;
+  category: AchievementCategory;
   unlockedAt?: string;
 }
 
-interface BadgeGridProps {
+interface Props {
   badges: Badge[];
+  total?: number;
+  unlocked?: number;
 }
 
-export function BadgeGrid({ badges }: BadgeGridProps) {
+export function BadgeGrid({ badges, total, unlocked }: Props) {
+  const t = useThemeColors();
+  const router = useRouter();
+
   return (
-    <View style={{ marginBottom: 24 }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 14,
-        }}
-      >
-        <Text
-          style={{
-            color: '#1F2328',
-            fontSize: 16,
-            fontWeight: '900',
-            textTransform: 'uppercase',
-            letterSpacing: 0.3,
-          }}
-        >
-          Conquistas
-        </Text>
-        <TouchableOpacity>
-          <Text
+    <View style={{ marginBottom: 8 }}>
+      <View style={{
+        flexDirection: 'row',
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
+        marginBottom: 14,
+      }}>
+        <View>
+          <Text style={{
+            fontFamily: 'Menlo', fontSize: 10, letterSpacing: 2,
+            color: t.textMuted, textTransform: 'uppercase', marginBottom: 2,
+          }}>
+            Recognition
+          </Text>
+          <Text style={{
+            fontFamily: 'RobotoSlab-Black', fontSize: 22, letterSpacing: -0.6,
+            color: t.text,
+          }}>Conquistas</Text>
+        </View>
+        {typeof total === 'number' && (
+          <TouchableOpacity
+            onPress={() => router.push('/(tabs)/challenges/achievements')}
             style={{
-              color: '#495057',
-              fontSize: 13,
-              fontWeight: '700',
-              textDecorationLine: 'underline',
+              backgroundColor: t.surfaceAlt,
+              paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10,
+              borderWidth: 1, borderColor: t.border,
+              flexDirection: 'row', alignItems: 'center',
             }}
           >
-            Ver todas
-          </Text>
-        </TouchableOpacity>
+            <Text style={{ fontFamily: 'Menlo', fontSize: 11, fontWeight: '700', color: t.text }}>
+              {unlocked ?? 0}
+            </Text>
+            <Text style={{
+              fontFamily: 'Menlo', fontSize: 10, color: t.textDim,
+              marginLeft: 2, marginRight: 8,
+            }}>/{total}</Text>
+            <Text style={{
+              fontFamily: 'System', fontSize: 10, fontWeight: '700',
+              color: t.text, letterSpacing: 1.2, textTransform: 'uppercase',
+            }}>Todas</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 10,
-        }}
-      >
-        {badges.map((badge) => {
-          const isUnlocked = !!badge.unlockedAt;
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+        {badges.map((b) => {
+          const isUnlocked = !!b.unlockedAt;
           return (
             <View
-              key={badge.id}
+              key={b.id}
               style={{
-                width: '30%',
+                width: '31.3%',
                 aspectRatio: 1,
-                borderRadius: 18,
-                padding: 8,
+                borderRadius: 16,
+                padding: 10,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: isUnlocked ? '#1F2328' : '#F4F4F4',
+                backgroundColor: t.surface,
                 borderWidth: 1,
-                borderColor: isUnlocked
-                  ? '#1F2328'
-                  : 'rgba(73, 80, 87, 0.12)',
-                opacity: isUnlocked ? 1 : 0.5,
+                borderColor: t.border,
+                opacity: isUnlocked ? 1 : 0.7,
               }}
             >
-              <Text style={{ fontSize: 30, marginBottom: 6 }}>{badge.icon}</Text>
+              <TierBadge
+                tier={b.tier}
+                category={b.category}
+                size={52}
+                unlocked={isUnlocked}
+              />
               <Text
                 style={{
-                  color: isUnlocked ? '#FFFFFF' : '#495057',
-                  fontSize: 9,
-                  fontWeight: '800',
-                  textAlign: 'center',
-                  lineHeight: 12,
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.3,
+                  fontFamily: 'System', fontSize: 9, fontWeight: '700',
+                  letterSpacing: 0.8, textTransform: 'uppercase',
+                  color: isUnlocked ? t.text : t.textDim,
+                  textAlign: 'center', marginTop: 7, lineHeight: 11,
                 }}
                 numberOfLines={2}
               >
-                {badge.name}
+                {b.name}
               </Text>
               {isUnlocked && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 6,
-                    right: 6,
-                    width: 6,
-                    height: 6,
-                    borderRadius: 3,
-                    backgroundColor: '#48BB78',
-                  }}
-                />
+                <View style={{
+                  position: 'absolute', top: 8, right: 8,
+                  width: 5, height: 5, borderRadius: 3, backgroundColor: t.success,
+                }} />
               )}
             </View>
           );

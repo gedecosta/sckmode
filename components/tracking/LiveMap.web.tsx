@@ -1,17 +1,26 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Map as MapIcon } from 'lucide-react-native';
+import { useThemeColors } from '../../lib/tokens';
 
 export function LiveMap() {
+  const t = useThemeColors();
   return (
-    <View className="flex-1 bg-athledia-card items-center justify-center p-8">
-      <View className="bg-athledia-bg p-8 rounded-full mb-6 shadow-sm border border-athledia-slate/10">
-        <MapIcon size={48} color="#495057" strokeWidth={1.5} />
+    <View style={{ flex: 1, backgroundColor: t.surface, alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      <View style={{
+        padding: 28, borderRadius: 999, marginBottom: 22,
+        backgroundColor: t.surfaceAlt, borderWidth: 1, borderColor: t.border,
+      }}>
+        <MapIcon size={44} color={t.textMuted} strokeWidth={1.5} />
       </View>
-      <Text className="text-athledia-dark text-xl font-black font-serif uppercase tracking-tight text-center">
-        Mapa Indisponível na Web
-      </Text>
-      <Text className="text-athledia-slate text-center mt-3 font-medium leading-6 max-w-xs">
+      <Text style={{
+        fontFamily: 'RobotoSlab-Black', fontSize: 20, letterSpacing: -0.5,
+        color: t.text, textAlign: 'center',
+      }}>Mapa indisponível na web</Text>
+      <Text style={{
+        fontFamily: 'System', fontSize: 13, color: t.textMuted,
+        marginTop: 12, lineHeight: 19, textAlign: 'center', maxWidth: 280,
+      }}>
         O rastreamento GPS e o mapa interativo estão otimizados para a experiência no seu celular Athledia.
       </Text>
     </View>

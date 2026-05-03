@@ -1,136 +1,287 @@
-import { useState } from 'react';
-import { View, Text, Alert, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Button } from '../../components/ui/Button';
-import { Input } from '../../components/ui/Input';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Svg, { Path, Defs, LinearGradient as SvgGrad, Stop } from 'react-native-svg';
+import { OrganicLoader } from '../../components/ui/OrganicLoader';
 import { useAuthStore } from '../../stores/authStore';
+import { useToastStore } from '../../stores/toastStore';
 import { supabase } from '../../lib/supabase';
-import { CloudBackground } from '../../components/ui/CloudBackground';
+import { authLimiter } from '../../lib/rateLimiter';
+import { analytics } from '../../lib/analytics';
+import { loginSchema, type LoginInput } from '../../lib/validators';
+import { getUserFriendlyMessage } from '../../lib/errorSanitizer';
+import { useThemeColors } from '../../lib/tokens';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
-  const { setSession, signInWithOAuth } = useAuthStore();
-  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const { setSession } = useAuthStore();
+  const toast = useToastStore();
+  const t = useThemeColors();
 
-  async function handleOAuth(provider: 'google' | 'apple') {
-    setOauthLoading(provider);
-    const { error } = await signInWithOAuth(provider);
-    setOauthLoading(null);
-    
+  const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
+  });
+
+  async function onSubmit(values: LoginInput) {
+    if (!authLimiter.canProceed()) {
+      const retrySec = Math.ceil(authLimiter.getRetryAfter() / 1000);
+      toast.show(`Muitas tentativas. Tente novamente em ${retrySec}s.`, 'error');
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
+
     if (error) {
-      if (error.message !== 'Login cancelado pelo usuário.') {
-        Alert.alert(`Erro no Login com ${provider === 'google' ? 'Google' : 'Apple'}`, error.message);
+      toast.show(getUserFriendlyMessage(error), 'error');
+      analytics.track('error_occurred', { context: 'login', message: error.message });
+    } else if (data.session) {
+      setSession(data.session);
+      analytics.track('login', { method: 'email' });
+      if (data.session.user?.id) {
+        analytics.identify(data.session.user.id, { email: values.email });
       }
-    } else {
       router.replace('/(tabs)');
     }
   }
 
-  async function handleSignIn() {
-    if (!email || !password) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
-      return;
-    }
-
-    setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setLoading(false);
-
-    if (error) {
-      Alert.alert('Erro de Autenticação', error.message);
-    } else {
-      setSession(data.session);
-      router.replace('/(tabs)');
-    }
+  function handleOAuthComingSoon() {
+    toast.show('Login social em breve.', 'info');
   }
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-athledia-bg relative"
+      style={{ flex: 1, backgroundColor: t.bg }}
     >
-      <CloudBackground />
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
-        <View className="mb-14 mt-10 items-center">
-          <Text 
-            className="text-athledia-dark text-6xl tracking-tighter" 
-            style={{ fontFamily: 'RobotoSlab-Black' }}
-          >
-            Athledia
+      {/* Mountain silhouette */}
+      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 280, opacity: 0.7 }} pointerEvents="none">
+        <Svg width="100%" height="100%" viewBox="0 0 400 280" preserveAspectRatio="xMidYMid slice">
+          <Defs>
+            <SvgGrad id="peakGrad" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={t.accent} stopOpacity="0.18" />
+              <Stop offset="1" stopColor={t.accent} stopOpacity="0" />
+            </SvgGrad>
+          </Defs>
+          <Path
+            d="M0 260 L70 180 L120 210 L180 120 L230 170 L290 90 L340 160 L400 130 L400 0 L0 0 Z"
+            fill="url(#peakGrad)"
+          />
+          <Path
+            d="M0 260 L70 180 L120 210 L180 120 L230 170 L290 90 L340 160 L400 130"
+            stroke={t.border}
+            strokeWidth="1"
+            fill="none"
+          />
+        </Svg>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1, justifyContent: 'center',
+          paddingHorizontal: 28, paddingTop: 80, paddingBottom: 40,
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Editorial header */}
+        <View style={{ marginBottom: 40 }}>
+          <Text style={{
+            fontFamily: 'Menlo', fontSize: 11, letterSpacing: 3,
+            color: t.accentText, textTransform: 'uppercase',
+          }}>
+            ATHLEDIA · 2026
           </Text>
-          <Text className="text-athledia-dark mt-1 text-sm font-bold tracking-widest lowercase">
-            built for the grind
+          <Text style={{
+            fontFamily: 'RobotoSlab-Black', fontSize: 56,
+            letterSpacing: -2.5, lineHeight: 58,
+            color: t.text, marginTop: 6,
+          }}>
+            Built for{'\n'}the grind.
+          </Text>
+          <Text style={{
+            fontFamily: 'System', fontSize: 15, lineHeight: 22,
+            color: t.textMuted, marginTop: 14, maxWidth: 320,
+          }}>
+            Entre para continuar sua jornada — rastreie, analise e compita com quem importa.
           </Text>
         </View>
 
-        <View className="space-y-4 gap-4">
-          <Input
-            label="E-mail"
-            placeholder="seu@email.com"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
+        {/* Fields */}
+        <View style={{ gap: 14 }}>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value, onBlur }, fieldState }) => (
+              <FocusField
+                label="E-mail"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="atleta@athledia.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={fieldState.error?.message}
+                t={t}
+              />
+            )}
           />
-          <Input
-            label="Senha"
-            placeholder="Sua senha"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value, onBlur }, fieldState }) => (
+              <FocusField
+                label="Senha"
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                placeholder="••••••••"
+                secureTextEntry
+                error={fieldState.error?.message}
+                t={t}
+              />
+            )}
           />
-          
-          <TouchableOpacity onPress={() => router.push('/(auth)/register/forgot-password' as any)}>
-            <Text className="text-athledia-dark self-end text-sm font-bold mt-2 underline">
-              Esqueceu a senha?
+        </View>
+
+        <TouchableOpacity
+          onPress={() => router.push('/(auth)/register/forgot-password' as any)}
+          style={{ alignSelf: 'flex-end', marginTop: 10, marginBottom: 24 }}
+        >
+          <Text style={{ fontFamily: 'System', fontSize: 13, fontWeight: '600', color: t.accentText }}>
+            Esqueceu a senha?
+          </Text>
+        </TouchableOpacity>
+
+        {/* CTA */}
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+          activeOpacity={0.85}
+          style={{
+            height: 54, borderRadius: 14,
+            backgroundColor: t.text,
+            alignItems: 'center', justifyContent: 'center',
+            opacity: isSubmitting ? 0.6 : 1,
+          }}
+        >
+          {isSubmitting ? (
+            <OrganicLoader size="sm" tint="inverse" />
+          ) : (
+            <Text style={{
+              color: t.bg, fontFamily: 'System', fontSize: 14, fontWeight: '800',
+              letterSpacing: 1.6, textTransform: 'uppercase',
+            }}>
+              Entrar
             </Text>
-          </TouchableOpacity>
+          )}
+        </TouchableOpacity>
 
-          <Button 
-            label="Entrar" 
-            onPress={handleSignIn} 
-            isLoading={loading}
-            className="mt-6 shadow-md"
-          />
-
-          <View className="flex-row items-center justify-center mt-8 mb-2">
-            <View className="flex-1 h-[2px] bg-athledia-slate/10" />
-            <Text className="text-athledia-slate mx-4 font-black uppercase text-xs tracking-widest">Ou acesse com</Text>
-            <View className="flex-1 h-[2px] bg-athledia-slate/10" />
-          </View>
-
-          <View className="flex-row gap-4 mt-2">
-            <Button 
-              label="Google" 
-              variant="secondary"
-              isLoading={oauthLoading === 'google'}
-              onPress={() => handleOAuth('google')}
-              className="flex-1 rounded-[16px] border-athledia-slate/20 shadow-sm bg-white"
-            />
-            <Button 
-              label="Apple" 
-              variant="secondary"
-              isLoading={oauthLoading === 'apple'}
-              onPress={() => handleOAuth('apple')}
-              className="flex-1 rounded-[16px] border-athledia-slate/20 shadow-sm bg-white"
-            />
-          </View>
+        {/* Divider */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 32, marginBottom: 18 }}>
+          <View style={{ flex: 1, height: 1, backgroundColor: t.border }} />
+          <Text style={{
+            fontFamily: 'Menlo', fontSize: 9, letterSpacing: 2,
+            color: t.textDim, textTransform: 'uppercase', marginHorizontal: 14,
+          }}>
+            ou acesse com
+          </Text>
+          <View style={{ flex: 1, height: 1, backgroundColor: t.border }} />
         </View>
 
-        <View className="flex-row justify-center mt-12 bg-athledia-bg/50 p-2 rounded-xl self-center">
-          <Text className="text-athledia-slate font-medium">Não tem uma conta? </Text>
+        {/* OAuth */}
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          {(['google', 'apple'] as const).map((p) => (
+            <TouchableOpacity
+              key={p}
+              onPress={handleOAuthComingSoon}
+              activeOpacity={0.85}
+              style={{
+                flex: 1, height: 50, borderRadius: 14,
+                backgroundColor: t.surface, borderWidth: 1, borderColor: t.border,
+                alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <Text style={{
+                color: t.text, fontFamily: 'System', fontSize: 12, fontWeight: '700',
+                letterSpacing: 1.4, textTransform: 'uppercase',
+              }}>
+                {p === 'google' ? 'Google' : 'Apple'}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Footer */}
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 40 }}>
+          <Text style={{ color: t.textMuted, fontFamily: 'System', fontSize: 13 }}>
+            Novo por aqui?{' '}
+          </Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-            <Text className="text-athledia-dark font-bold underline">Cadastre-se</Text>
+            <Text style={{
+              color: t.text, fontFamily: 'System', fontSize: 13, fontWeight: '700',
+              textDecorationLine: 'underline',
+            }}>
+              Criar conta
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+function FocusField({
+  label, value, onChangeText, onBlur, placeholder,
+  keyboardType, autoCapitalize, secureTextEntry, error, t,
+}: any) {
+  const [focused, setFocused] = React.useState(false);
+  return (
+    <View>
+      <View
+        style={{
+          backgroundColor: t.surface,
+          borderRadius: 14,
+          paddingHorizontal: 16,
+          paddingTop: 10,
+          paddingBottom: 12,
+          borderWidth: 1.5,
+          borderColor: error ? t.danger : focused ? t.accent : t.border,
+        }}
+      >
+        <Text style={{
+          fontFamily: 'Menlo', fontSize: 9, letterSpacing: 1.8,
+          color: error ? t.danger : focused ? t.accentText : t.textDim,
+          textTransform: 'uppercase', fontWeight: '700', marginBottom: 2,
+        }}>
+          {label}
+        </Text>
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={t.textDim}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCapitalize}
+          secureTextEntry={secureTextEntry}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); onBlur?.(); }}
+          style={{
+            fontFamily: 'System', fontSize: 16,
+            color: t.text,
+            paddingVertical: Platform.OS === 'ios' ? 6 : 2,
+          }}
+        />
+      </View>
+      {error && (
+        <Text style={{ fontFamily: 'System', fontSize: 12, color: t.danger, marginTop: 4, marginLeft: 2 }}>
+          {error}
+        </Text>
+      )}
+    </View>
   );
 }

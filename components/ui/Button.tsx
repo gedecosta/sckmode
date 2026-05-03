@@ -1,76 +1,91 @@
 import { forwardRef } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Text, Pressable, PressableProps, View } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useThemeColors } from '../../lib/tokens';
+import { OrganicLoader } from './OrganicLoader';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface ButtonProps extends TouchableOpacityProps {
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+interface ButtonProps extends PressableProps {
   label: string;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'accent' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  className?: string;
 }
 
 export const Button = forwardRef<View, ButtonProps>(
   (
     {
-      label,
-      variant = 'primary',
-      size = 'md',
-      isLoading = false,
-      disabled,
-      className,
-      ...props
+      label, variant = 'primary', size = 'md',
+      isLoading = false, disabled,
+      leftIcon, rightIcon, className, ...props
     },
     ref
   ) => {
-    const baseStyles = 'flex flex-row items-center justify-center rounded-xl active:opacity-80';
-    
-    const variantStyles = {
-      primary: 'bg-athledia-dark shadow-sm',
-      secondary: 'bg-athledia-bg border-2 border-athledia-slate/10 shadow-sm',
-      ghost: 'bg-transparent',
-      danger: 'bg-red-500',
+    const c = useThemeColors();
+    const scale = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+    const base = 'flex flex-row items-center justify-center rounded-xl gap-2';
+
+    const variantStyles: Record<string, string> = {
+      primary:   'bg-obsidian dark:bg-snow',
+      accent:    'bg-glacier',
+      secondary: 'bg-transparent border border-obsidian/15 dark:border-snow/15',
+      ghost:     'bg-transparent',
+      danger:    'bg-danger',
     };
 
-    const sizeStyles = {
-      sm: 'py-2 px-4',
+    const sizeStyles: Record<string, string> = {
+      sm: 'py-2.5 px-4',
       md: 'py-4 px-6',
-      lg: 'py-5 px-8',
+      lg: 'py-5 px-7',
     };
 
-    const textStyles = {
-      primary: 'text-athledia-accent font-black tracking-widest uppercase',
-      secondary: 'text-athledia-dark font-black tracking-widest uppercase',
-      ghost: 'text-athledia-dark font-bold underline',
-      danger: 'text-white font-semibold',
+    const textColor: Record<string, string> = {
+      primary:   'text-snow dark:text-obsidian',
+      accent:    'text-[#041A2E]',
+      secondary: 'text-obsidian dark:text-snow',
+      ghost:     'text-obsidian dark:text-snow underline',
+      danger:    'text-white',
     };
 
-    const isInteractionDisabled = disabled || isLoading;
+    const isDisabled = disabled || isLoading;
+    const loaderTint: 'inverse' | 'accent' | 'mono' =
+      variant === 'accent'  ? 'accent'  :
+      variant === 'primary' ? 'inverse' : 'mono';
 
     return (
-      <TouchableOpacity
+      <AnimatedPressable
         ref={ref as any}
-        activeOpacity={0.8}
-        disabled={isInteractionDisabled}
-        className={cn(
-          baseStyles,
-          variantStyles[variant],
-          sizeStyles[size],
-          isInteractionDisabled && 'opacity-50',
-          className
-        )}
+        onPressIn={() => { scale.value = withSpring(0.97, { damping: 20, stiffness: 400 }); }}
+        onPressOut={() => { scale.value = withSpring(1, { damping: 20, stiffness: 400 }); }}
+        disabled={isDisabled}
+        style={animatedStyle}
+        className={cn(base, variantStyles[variant], sizeStyles[size], isDisabled && 'opacity-50', className)}
         {...props}
       >
         {isLoading ? (
-          <ActivityIndicator color={variant === 'ghost' ? '#818cf8' : '#fff'} />
+          <OrganicLoader size={size === 'lg' ? 'md' : 'sm'} tint={loaderTint} />
         ) : (
-          <Text className={cn('text-base', textStyles[variant])}>{label}</Text>
+          <>
+            {leftIcon}
+            <Text className={cn('text-sm font-bold tracking-wider uppercase', textColor[variant])}>
+              {label}
+            </Text>
+            {rightIcon}
+          </>
         )}
-      </TouchableOpacity>
+      </AnimatedPressable>
     );
   }
 );

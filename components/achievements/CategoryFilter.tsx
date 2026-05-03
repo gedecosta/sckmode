@@ -5,64 +5,60 @@ import {
   CATEGORY_META,
   useAchievementStore,
 } from '../../stores/achievementStore';
+import { ActivityIcon, ActivityKind } from '../ui/ActivityIcon';
+import { useThemeColors } from '../../lib/tokens';
 
 const ALL_CATEGORIES: (AchievementCategory | 'all')[] = [
-  'all',
-  'endurance',
-  'multisport',
-  'cycling',
-  'swimming',
-  'strength',
-  'cardio',
-  'flexibility',
-  'combat',
-  'outdoor',
-  'team',
-  'racket',
-  'consistency',
+  'all', 'endurance', 'multisport', 'cycling', 'swimming',
+  'strength', 'cardio', 'flexibility', 'combat', 'outdoor',
+  'team', 'racket', 'consistency',
 ];
+
+const CATEGORY_GLYPH: Record<AchievementCategory, ActivityKind> = {
+  endurance: 'run',       multisport: 'triathlon',  cycling: 'cycle',
+  swimming: 'swim',        strength: 'strength',     cardio: 'hiit',
+  flexibility: 'yoga',     combat: 'combat',          outdoor: 'mountain',
+  team: 'team',            racket: 'racket',          consistency: 'chart',
+};
 
 export function CategoryFilter() {
   const { selectedCategory, setCategory } = useAchievementStore();
+  const t = useThemeColors();
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 12, gap: 8 }}
+      contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 14, gap: 8 }}
     >
       {ALL_CATEGORIES.map((cat) => {
         const isActive = selectedCategory === cat;
-        const meta = cat === 'all' ? null : CATEGORY_META[cat];
-        const label = cat === 'all' ? 'Todos' : meta!.label;
-        const icon = cat === 'all' ? '🏅' : meta!.icon;
+        const label = cat === 'all' ? 'Todos' : CATEGORY_META[cat].label;
+        const glyph: ActivityKind = cat === 'all' ? 'medal' : CATEGORY_GLYPH[cat];
+        const fg = isActive ? t.bg : t.text;
 
         return (
           <TouchableOpacity
             key={cat}
             onPress={() => setCategory(cat)}
-            activeOpacity={0.7}
+            activeOpacity={0.8}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              paddingHorizontal: 14,
-              paddingVertical: 8,
-              borderRadius: 20,
-              backgroundColor: isActive ? '#1F2328' : 'rgba(73, 80, 87, 0.05)',
+              paddingHorizontal: 12,
+              paddingVertical: 9,
+              borderRadius: 12,
+              backgroundColor: isActive ? t.text : t.surface,
               borderWidth: 1,
-              borderColor: isActive ? '#1F2328' : 'rgba(73, 80, 87, 0.1)',
+              borderColor: isActive ? t.text : t.border,
             }}
           >
-            <Text style={{ fontSize: 14, marginRight: 6 }}>{icon}</Text>
-            <Text
-              style={{
-                color: isActive ? '#F4F4F4' : '#868E96',
-                fontSize: 12,
-                fontWeight: '800',
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-              }}
-            >
+            <ActivityIcon kind={glyph} size={14} color={fg} accent={isActive ? t.bg : t.accentText} strokeWidth={1.6} />
+            <Text style={{
+              color: fg, marginLeft: 8,
+              fontFamily: 'System', fontSize: 11, fontWeight: '700',
+              letterSpacing: 1.2, textTransform: 'uppercase',
+            }}>
               {label}
             </Text>
           </TouchableOpacity>

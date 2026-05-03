@@ -1,155 +1,174 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Trophy, Plus, Users, Zap, Award, ChevronRight, Activity } from 'lucide-react-native';
+import { Plus, Users, Award, ChevronRight, Activity } from 'lucide-react-native';
 import { useAchievementStore, ALL_ACHIEVEMENTS } from '../../../stores/achievementStore';
+import { NoiseBackground } from '../../../components/ui/NoiseBackground';
+import { Button } from '../../../components/ui/Button';
+import { useThemeColors } from '../../../lib/tokens';
 
 const MOCK_CHALLENGES = [
-  {
-    id: '1',
-    title: 'Murph Challenge',
-    participants: 1240,
-    type: 'Crossfit',
-    difficulty: 'Hard',
-    color: '#E03131',
-  },
-  {
-    id: '2',
-    title: 'Desafio 5K Sub-20',
-    participants: 856,
-    type: 'Corrida',
-    difficulty: 'Medium',
-    color: '#D4A640',
-  },
-  {
-    id: '3',
-    title: '100 Flexões em 30 Dias',
-    participants: 4320,
-    type: 'Bodyweight',
-    difficulty: 'Easy',
-    color: '#48BB78',
-  },
+  { id: '1', title: 'Murph Challenge',       type: 'Crossfit',    difficulty: 'Hard',   participants: 1240 },
+  { id: '2', title: 'Sub-20 5K',             type: 'Corrida',     difficulty: 'Medium', participants: 856  },
+  { id: '3', title: '100 Flexões · 30 Dias', type: 'Bodyweight',  difficulty: 'Easy',   participants: 4320 },
 ];
 
 export default function ChallengesScreen() {
+  const c = useThemeColors();
   const router = useRouter();
   const { userAchievements, totalScore } = useAchievementStore();
-  const unlockedCount = userAchievements.filter(a => a.unlockedAt).length;
+  const unlocked = userAchievements.filter((a) => a.unlockedAt).length;
 
   return (
-    <View className="flex-1 bg-athledia-bg">
-      {/* Header */}
-      <View className="flex-row items-center justify-between px-6 pt-[52px] pb-4 bg-athledia-bg">
-        <View className="flex-row items-center">
-          <Zap size={32} color="#1F2328" strokeWidth={2.5} />
-          <Text className="text-athledia-dark text-4xl font-black font-serif uppercase tracking-tighter ml-2">Desafios</Text>
+    <View className="flex-1">
+      <NoiseBackground />
+
+      <View className="flex-row items-end justify-between px-6 pt-[52px] pb-5">
+        <View>
+          <Text
+            className="text-[10px] uppercase mb-1"
+            style={{ color: c.textMuted, letterSpacing: 2, fontFamily: 'Menlo' }}
+          >
+            · SERIES · ACTIVE
+          </Text>
+          <Text
+            style={{ color: c.text, fontSize: 40, fontFamily: 'RobotoSlab-Black', letterSpacing: -1.5, lineHeight: 40 }}
+          >
+            Series
+          </Text>
         </View>
-        <TouchableOpacity 
+        <Pressable
           onPress={() => router.push('/(tabs)/create')}
-          className="bg-athledia-card border border-athledia-slate/20 p-2.5 rounded-xl shadow-sm"
+          className="p-3 rounded-xl"
+          style={{ backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}
         >
-          <Plus size={22} color="#1F2328" strokeWidth={3} />
-        </TouchableOpacity>
+          <Plus size={20} color={c.text} strokeWidth={2.5} />
+        </Pressable>
       </View>
 
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
-
-        {/* ── Achievements Entry Card ────────────────────────── */}
-        <TouchableOpacity
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Achievements entry */}
+        <Pressable
           onPress={() => router.push('/(tabs)/challenges/achievements')}
-          activeOpacity={0.85}
-          className="bg-athledia-card rounded-[24px] p-6 mb-8 mt-2 border border-athledia-slate/10 flex-row items-center shadow-sm"
+          className="mx-5 mb-5 rounded-2xl p-4 flex-row items-center"
+          style={{ backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}
         >
-          {/* Icon Badge */}
-          <View className="w-16 h-16 rounded-[20px] bg-[#D4A640]/10 border border-[#D4A640]/20 items-center justify-center mr-4">
-            <Award size={32} color="#D4A640" strokeWidth={2} />
+          <View
+            className="w-[52px] h-[52px] rounded-xl items-center justify-center mr-4"
+            style={{ backgroundColor: 'rgba(59,163,255,0.12)', borderWidth: 1, borderColor: 'rgba(59,163,255,0.4)' }}
+          >
+            <Award size={24} color={c.accentText} strokeWidth={2} />
           </View>
-
-          {/* Info */}
           <View className="flex-1">
-            <Text className="text-athledia-dark text-lg font-black uppercase tracking-widest mb-1 font-serif">
-              Conquistas
+            <Text
+              className="text-base mb-0.5"
+              style={{ color: c.text, fontFamily: 'RobotoSlab-Black', letterSpacing: -0.3 }}
+            >
+              Achievements
             </Text>
-            <View className="flex-row items-center mt-1">
-              <View className="flex-row items-center mr-4">
-                <View className="w-2 h-2 rounded-full bg-[#48BB78] mr-2" />
-                <Text className="text-athledia-slate text-sm font-bold">
-                  {unlockedCount} / {ALL_ACHIEVEMENTS.length}
-                </Text>
-              </View>
-              <Text className="text-[#D4A640] text-sm font-black uppercase tracking-tight">
-                {totalScore.toLocaleString('pt-BR')} pts
-              </Text>
-            </View>
+            <Text
+              className="text-[11px]"
+              style={{ color: c.textMuted, fontFamily: 'Menlo' }}
+            >
+              {unlocked}/{ALL_ACHIEVEMENTS.length} · {totalScore.toLocaleString('pt-BR')} pts
+            </Text>
           </View>
+          <ChevronRight size={18} color={c.textDim} />
+        </Pressable>
 
-          {/* Arrow */}
-          <ChevronRight size={20} color="#868E96" strokeWidth={3} />
-        </TouchableOpacity>
-
-        {/* Highlight Hero Challenge */}
-        <View className="bg-athledia-card border-2 border-athledia-dark rounded-[32px] p-8 mb-8 overflow-hidden">
-          <View className="absolute top-0 right-0 w-32 h-32 bg-athledia-dark/5 rounded-bl-[100px]" />
-          
-          <View className="flex-row items-center mb-5">
-            <View className="bg-athledia-dark py-1.5 px-3 rounded-md flex-row items-center">
-              <Trophy size={14} color="#FFF" />
-              <Text className="text-white font-black text-xs uppercase tracking-widest ml-2">Desafio da Semana</Text>
-            </View>
-          </View>
-
-          <Text className="text-athledia-dark text-5xl font-black font-serif uppercase tracking-tighter leading-none mb-4">
+        {/* Featured hero */}
+        <View
+          className="mx-5 mb-6 rounded-3xl p-7 overflow-hidden"
+          style={{ backgroundColor: c.ribbonBg }}
+        >
+          <View
+            className="absolute -top-10 -right-10 w-44 h-44 rounded-full"
+            style={{ backgroundColor: c.accent, opacity: 0.12 }}
+          />
+          <Text
+            className="text-[10px] uppercase mb-2"
+            style={{ color: c.accentText, letterSpacing: 1.6, fontFamily: 'Menlo' }}
+          >
+            · FEATURED THIS WEEK
+          </Text>
+          <Text
+            style={{
+              color: c.ribbonText, fontSize: 40, fontFamily: 'RobotoSlab-Black',
+              letterSpacing: -1.5, lineHeight: 40, marginBottom: 10,
+            }}
+          >
             Iron Man{'\n'}Virtual
           </Text>
-          <Text className="text-athledia-slate font-semibold text-sm leading-6 mb-8 pr-4">
-            Complete um Triathlon na distância Iron em uma semana. Registre corrida, ciclismo e natação para desbloquear a medalha de Ouro.
+          <Text
+            className="text-sm mb-6"
+            style={{ color: 'rgba(244,246,248,0.7)', lineHeight: 20 }}
+          >
+            Complete um Triathlon na distância Iron em uma semana. Corra, pedale, nade — desbloqueie a medalha de Ouro.
           </Text>
-
-          <TouchableOpacity className="bg-athledia-dark py-5 rounded-2xl items-center flex-row justify-center shadow-lg shadow-black/20">
-            <Activity size={20} color="#fff" />
-            <Text className="text-white font-black ml-3 text-base uppercase tracking-widest">Aceitar Desafio</Text>
-          </TouchableOpacity>
+          <Button
+            label="Aceitar Desafio"
+            variant="accent"
+            leftIcon={<Activity size={16} color={c.accentInk} />}
+          />
         </View>
 
-        {/* List Header */}
-        <View className="flex-row items-center justify-between mb-5 px-1">
-          <Text className="text-athledia-dark font-black font-serif text-2xl uppercase tracking-tighter">Em Alta</Text>
-          <TouchableOpacity>
-            <Text className="text-athledia-slate font-bold uppercase text-xs tracking-wider">Ver todos</Text>
-          </TouchableOpacity>
+        {/* Trending */}
+        <View className="flex-row items-baseline justify-between px-6 pb-4">
+          <Text
+            style={{ color: c.text, fontSize: 20, fontFamily: 'RobotoSlab-Black', letterSpacing: -0.5 }}
+          >
+            Em Alta
+          </Text>
+          <Text
+            className="text-[10px] uppercase"
+            style={{ color: c.textMuted, letterSpacing: 1.6, fontFamily: 'Menlo' }}
+          >
+            Ver todos →
+          </Text>
         </View>
 
-        {/* Mock Challenge Items */}
-        <View className="gap-4">
-          {MOCK_CHALLENGES.map((item) => (
-            <TouchableOpacity 
-              key={item.id}
-              activeOpacity={0.8}
-              className="bg-athledia-card border border-athledia-slate/10 rounded-[20px] p-6 shadow-sm"
+        <View className="px-5 gap-2.5">
+          {MOCK_CHALLENGES.map((it) => (
+            <Pressable
+              key={it.id}
+              className="rounded-2xl p-4"
+              style={{ backgroundColor: c.surface, borderWidth: 1, borderColor: c.border }}
             >
-              <View className="flex-row justify-between items-start mb-4">
-                <Text className="text-athledia-dark text-xl font-black font-serif uppercase tracking-tight flex-1 mr-4">
-                  {item.title}
+              <View className="flex-row justify-between items-center mb-3">
+                <Text
+                  className="flex-1 pr-3"
+                  style={{ color: c.text, fontSize: 17, fontFamily: 'RobotoSlab-Black', letterSpacing: -0.4 }}
+                >
+                  {it.title}
                 </Text>
-                {/* Difficulty Pill */}
-                <View className="px-3 py-1 rounded-md border" style={{ borderColor: item.color, backgroundColor: `${item.color}15` }}>
-                  <Text style={{ color: item.color }} className="text-xs font-black uppercase tracking-widest">{item.difficulty}</Text>
+                <View
+                  className="px-2 py-0.5 rounded"
+                  style={{ borderWidth: 1, borderColor: c.border }}
+                >
+                  <Text
+                    className="text-[9px] font-bold uppercase"
+                    style={{ color: c.textMuted, letterSpacing: 1.5, fontFamily: 'Menlo' }}
+                  >
+                    {it.difficulty}
+                  </Text>
                 </View>
               </View>
-              
-              <View className="flex-row items-center justify-between mt-2">
-                {/* Type Pill */}
-                <View className="bg-athledia-bg px-3 py-1.5 rounded-lg border border-athledia-slate/10">
-                  <Text className="text-athledia-slate text-xs font-black uppercase tracking-wider">{item.type}</Text>
-                </View>
-                
-                {/* Participants */}
-                <View className="flex-row items-center">
-                  <Users size={16} color="#868E96" />
-                  <Text className="text-athledia-dark text-sm ml-2 font-black">{item.participants}</Text>
+              <View className="flex-row justify-between items-center">
+                <Text className="text-xs" style={{ color: c.textDim }}>
+                  {it.type}
+                </Text>
+                <View className="flex-row items-center gap-1.5">
+                  <Users size={13} color={c.textMuted} strokeWidth={1.75} />
+                  <Text className="text-xs" style={{ color: c.textMuted, fontFamily: 'Menlo' }}>
+                    {it.participants}
+                  </Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
